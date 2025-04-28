@@ -1,11 +1,12 @@
 # PassenGen - Secure Password Generator
 
-PassenGen is a command-line based tool written in Python designed to generate cryptographically secure passwords locally, without relying on any external services. It is lightweight, secure by design, and customizable.
+PassenGen is a command-line based tool written in Python designed to generate cryptographically secure passwords locally, without relying on any external services. It is lightweight, secure by design, customizable, and now supports interactive mode.
 
 ## Features
 
 - **Cryptographically secure** randomness using Python's `secrets` module
-- **Configurable password length** and character sets
+- **Configurable password length**, character sets, and optional forced inclusion of specific words
+- **Interactive mode** if no CLI arguments are provided
 - **Minimum enforced password length** of 12 characters
 - **Simple and intuitive CLI interface** using `argparse`
 - **Zero network connections**: fully offline and local operation
@@ -24,75 +25,82 @@ PassenGen is a command-line based tool written in Python designed to generate cr
 
 ### Clone the Repository
 
-\`\`\`bash
-git clone https://github.com/yourusername/passengen.git
+```bash
+git clone https://github.com/poshecamo/PassenGen.git
 cd passengen
-\`\`\`
+```
 
 ### Setup Virtual Environment (Optional but Recommended)
 
-\`\`\`bash
+```bash
 python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
-\`\`\`
+```
 
 ### Install Optional Dependencies
 
-\`\`\`bash
+```bash
 pip install colorama
-\`\`\`
+```
 
 Or install from requirements.txt:
 
-\`\`\`bash
+```bash
 pip install -r requirements.txt
-\`\`\`
+```
 
 ### Make the Script Executable (Linux/macOS)
 
-\`\`\`bash
+```bash
 chmod +x passengen.py
-\`\`\`
+```
 
 ## Usage
 
-### Basic Command
+### Interactive Mode (Recommended)
 
-\`\`\`bash
+Simply run:
+
+```bash
 python passengen.py
-\`\`\`
+```
 
-Generates a secure password with default settings (16 characters, includes all character types).
+You will be prompted interactively for:
+- Password length
+- Whether to include special characters, digits, uppercase, lowercase
+- Optional: Force a specific word to be inserted into the password
 
-### With Custom Length
+### CLI Mode with Arguments
 
-\`\`\`bash
-python passengen.py --length 24
-\`\`\`
+#### Basic Command
 
-Generates a 24-character password.
+```bash
+python passengen.py --length 16
+```
 
-### Exclude Special Characters
+Generates a secure password with specific settings.
 
-\`\`\`bash
+#### Exclude Special Characters
+
+```bash
 python passengen.py --no-specials
-\`\`\`
+```
 
 Generates a password without special characters.
 
-### Generate Multiple Passwords
+#### Generate Multiple Passwords
 
-\`\`\`bash
+```bash
 python passengen.py --count 5
-\`\`\`
+```
 
 Generates 5 different passwords.
 
-### Full Example with Multiple Options
+#### Full Example with Multiple Options
 
-\`\`\`bash
+```bash
 python passengen.py --length 20 --no-specials --no-digits
-\`\`\`
+```
 
 ## CLI Options
 
@@ -104,6 +112,7 @@ python passengen.py --length 20 --no-specials --no-digits
 | `--no-lowercase` | `-nl` | Exclude lowercase letters |
 | `--no-uppercase` | `-nu` | Exclude uppercase letters |
 | `--count` | `-c` | Number of passwords to generate (default: 1) |
+| `--force-word` | (N/A) | Force a specific word to be included in the password |
 | `--help` | `-h` | Show help message and exit |
 
 ## Future Enhancements
