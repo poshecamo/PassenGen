@@ -178,6 +178,18 @@ def save_password_encrypted(password, filepath="saved_passwords.enc"):
     print_colored(f"Password encrypted and saved to {filepath}", "cyan")
     print_colored(f"Encryption key saved to {filepath}.key (Keep it safe!)", "cyan")
 
+def save_to_revoked_list(password, filename="revoked_passwords.txt"):
+    with open(filename, "a") as file:
+        file.write(password + "\n")
+
+def is_password_revoked(password, filename="revoked_passwords.txt"):
+    try:
+        with open(filename, "r") as file:
+            revoked_passwords = {line.strip() for line in file}
+        return password in revoked_passwords
+    except FileNotFoundError:
+        return False
+
 
 def main():
     """Main function to handle CLI arguments and generate passwords."""
@@ -226,6 +238,23 @@ def main():
         seed=seed
     )
 
+    # Check for revoked password
+    attempts = 0
+    while is_password_revoked(password):
+        password = generate_password(
+            length=options['length'],
+            use_specials=options['use_specials'],
+            use_digits=options['use_digits'],
+            use_uppercase=options['use_uppercase'],
+            use_lowercase=options['use_lowercase'],
+            force_word=options['force_word'],
+            seed=None  # Don't reuse proof seed for regeneration
+        )
+        attempts += 1
+        if attempts > 5:
+            print_colored("\n⚠️ Failed to generate a non-revoked password after multiple attempts. Try different settings.", "red", bold=True)
+            sys.exit(1)
+
     print_colored("\nGenerated Password:", "yellow")
     print_colored(password, "green", bold=True)
 
@@ -249,6 +278,8 @@ def main():
     save_choice = input("\nDo you want to save this password encrypted locally? (y/n): ").lower()
     if save_choice == 'y':
         save_password_encrypted(password)
+
+    save_to_revoked_list(password)
 
     print("\nPassword generated using cryptographically secure methods.")
     print("This tool operates completely offline for your security.")
