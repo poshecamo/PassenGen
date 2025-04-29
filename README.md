@@ -17,6 +17,7 @@ PassenGen is a command-line based tool written in Python designed to generate cr
 - **Breached Password Check**: After generating a password, the tool automatically checks against the Have I Been Pwned database to warn if the password has been found in known breaches.
 - **Proof-of-Randomness Mode**: Optionally generate a secure random seed used to deterministically create your password and produce a SHA-256 hash as verifiable proof.
 - **Password Revocation List**: Generated passwords are automatically saved to a local revocation file to avoid regenerating the same password, enhancing overall security and uniqueness.
+- **Estimated Password Entropy**: After generating a password, the tool displays an estimated entropy (randomness strength) score to help users understand the strength of their password.
 
 ## Security Precautions
 
@@ -92,6 +93,7 @@ You will be prompted interactively for:
 - Automatic check if the generated password is found in known data breaches (powered by Have I Been Pwned)
 - Optionally enable Proof-of-Randomness mode to receive a secure seed and a SHA-256 hash of your generated password
 - Passwords are cross-checked against a local revocation list to prevent reuse of previously generated passwords.
+- Estimated password entropy displayed after password generation to help users assess randomness strength.
 
 ### CLI Mode with Arguments
 

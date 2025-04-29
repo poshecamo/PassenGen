@@ -17,6 +17,7 @@ from cryptography.fernet import Fernet
 
 import hashlib
 import requests
+import math
 
 try:
     from colorama import init, Fore, Style
@@ -190,6 +191,9 @@ def is_password_revoked(password, filename="revoked_passwords.txt"):
     except FileNotFoundError:
         return False
 
+def calculate_entropy(length, charset_size):
+    entropy = length * math.log2(charset_size)
+    return round(entropy, 2)
 
 def main():
     """Main function to handle CLI arguments and generate passwords."""
@@ -254,6 +258,19 @@ def main():
         if attempts > 5:
             print_colored("\n⚠️ Failed to generate a non-revoked password after multiple attempts. Try different settings.", "red", bold=True)
             sys.exit(1)
+
+    charset_size = 0
+    if options['use_lowercase']:
+        charset_size += 26
+    if options['use_uppercase']:
+        charset_size += 26
+    if options['use_digits']:
+        charset_size += 10
+    if options['use_specials']:
+        charset_size += len(string.punctuation)
+
+    entropy = calculate_entropy(len(password), charset_size)
+    print_colored(f"\nEstimated Password Entropy: {entropy} bits", "magenta")
 
     print_colored("\nGenerated Password:", "yellow")
     print_colored(password, "green", bold=True)
