@@ -11,6 +11,7 @@ import string
 import argparse
 import sys
 
+from cryptography.fernet import Fernet
 
 try:
     from colorama import init, Fore, Style
@@ -153,6 +154,17 @@ def evaluate_password_strength(password):
     else:
         return "Weak ⚠️"
 
+def save_password_encrypted(password, filepath="saved_passwords.enc"):
+    key = Fernet.generate_key()
+    cipher = Fernet(key)
+    encrypted = cipher.encrypt(password.encode())
+    with open(filepath, "wb") as file:
+        file.write(encrypted)
+    with open(filepath + ".key", "wb") as keyfile:
+        keyfile.write(key)
+    print_colored(f"Password encrypted and saved to {filepath}", "cyan")
+    print_colored(f"Encryption key saved to {filepath}.key (Keep it safe!)", "cyan")
+
 
 def main():
     """Main function to handle CLI arguments and generate passwords."""
@@ -217,6 +229,11 @@ def main():
         print_colored("\nGenerated Password:", "yellow")
         print_colored(password, "green", bold=True)
         print_colored("\nPassword Strength: " + evaluate_password_strength(password), "magenta")
+
+        save_choice = input("\nDo you want to save this password encrypted locally? (y/n): ").lower()
+        if save_choice == 'y':
+            save_password_encrypted(password)
+
         print("\nPassword generated using cryptographically secure methods.")
         print("This tool operates completely offline for your security.")
         sys.exit(0)
@@ -259,6 +276,10 @@ def main():
                 
             print_colored(password, "green", bold=True)
             print_colored("Password Strength: " + evaluate_password_strength(password), "magenta")
+
+            save_choice = input("\nDo you want to save this password encrypted locally? (y/n): ").lower()
+            if save_choice == 'y':
+                save_password_encrypted(password)
         
         print("\nPassword generated using cryptographically secure methods.")
         print("This tool operates completely offline for your security.")

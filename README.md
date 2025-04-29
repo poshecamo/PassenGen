@@ -1,6 +1,6 @@
 # PassenGen - Secure Password Generator
 
-PassenGen is a command-line based tool written in Python designed to generate cryptographically secure passwords locally, without relying on any external services. It is lightweight, secure by design, customizable, and now supports interactive mode.
+PassenGen is a command-line based tool written in Python designed to generate cryptographically secure passwords locally, without relying on any external services. It is lightweight, secure by design, customizable, and now supports both CLI arguments and interactive mode.
 
 ## Features
 
@@ -8,10 +8,12 @@ PassenGen is a command-line based tool written in Python designed to generate cr
 - **Configurable password length**, character sets, and optional forced inclusion of specific words
 - **Interactive mode** if no CLI arguments are provided
 - **Minimum enforced password length** of 12 characters
-- **Simple and intuitive CLI interface** using `argparse`
+- **Passphrase generation** mode (random words)
+- **Encrypted password saving** locally using symmetric encryption
+- **Password strength scoring** after generation
 - **Zero network connections**: fully offline and local operation
-- **Sensible default settings** ensuring strong password generation
 - **Colorful output** (optional, requires colorama)
+- **Docker support** for easy cross-platform execution
 
 ## Security Precautions
 
@@ -37,13 +39,7 @@ python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-### Install Optional Dependencies
-
-```bash
-pip install colorama
-```
-
-Or install from requirements.txt:
+### Install Dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -54,6 +50,24 @@ pip install -r requirements.txt
 ```bash
 chmod +x passengen.py
 ```
+
+## Running with Docker
+
+If you prefer not to install Python and dependencies manually, you can run PassenGen using Docker:
+
+1. Build the Docker image:
+
+```bash
+docker build -t passengen .
+```
+
+2. Run PassenGen inside Docker:
+
+```bash
+docker run -it passengen
+```
+
+PassenGen will launch inside the container, and you can generate passwords interactively.
 
 ## Usage
 
@@ -69,6 +83,10 @@ You will be prompted interactively for:
 - Password length
 - Whether to include special characters, digits, uppercase, lowercase
 - Optional: Force a specific word to be inserted into the password
+- Option to generate a passphrase instead of a random password
+- Option to copy the password to clipboard
+- Option to save the password encrypted locally
+- See password strength score
 
 ### CLI Mode with Arguments
 
@@ -114,13 +132,6 @@ python passengen.py --length 20 --no-specials --no-digits
 | `--count` | `-c` | Number of passwords to generate (default: 1) |
 | `--force-word` | (N/A) | Force a specific word to be included in the password |
 | `--help` | `-h` | Show help message and exit |
-
-## Future Enhancements
-
-- Option to auto-copy password to clipboard (with warning)
-- Option to generate passphrases (Diceware-style wordlists)
-- Save encrypted passwords locally using Fernet symmetric encryption
-- Password strength scoring feedback
 
 ## License
 
