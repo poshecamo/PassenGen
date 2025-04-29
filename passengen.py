@@ -11,12 +11,39 @@ import string
 import argparse
 import sys
 
+
 try:
     from colorama import init, Fore, Style
     COLORAMA_AVAILABLE = True
     init()  # Initialize colorama
 except ImportError:
     COLORAMA_AVAILABLE = False
+
+
+def get_logo():
+    return """
+  _____                           _____            
+ |  __ \                         / ____|           
+ | |__) |_ _ ___ ___  ___ _ __ | |  __  ___ _ __  
+ |  ___/ _` / __/ __|/ _ \ '_ \| | |_ |/ _ \ '_ \ 
+ | |  | (_| \__ \__ \  __/ | | | |__| |  __/ | | |
+ |_|   \__,_|___/___/\___|_| |_|\_____|\___|_| |_|
+                                                  
+       .--.
+      |o_o |    Secure Password Generator
+      |:_/ |    
+     //   \ \   
+    (|     | )  
+   /'\_   _/`\  
+   \___)=(___/  
+       """
+
+def get_small_logo():
+    return "PassenGen - Secure Passwords 🐼"
+
+def print_logo(small=False):
+    logo = get_small_logo() if small else get_logo()
+    print_colored(logo, "cyan", bold=True)
 
 def interactive_options():
     """Ask the user for password generation options interactively."""
@@ -112,6 +139,7 @@ def print_colored(text, color=None, bold=False):
 
 def main():
     """Main function to handle CLI arguments and generate passwords."""
+    print_logo()
     parser = argparse.ArgumentParser(
         description="PassenGen - Secure Password Generator",
         epilog="Generates cryptographically secure passwords locally."
@@ -194,7 +222,7 @@ def main():
         sys.exit(1)
     
     try:
-        print_colored("\nPassenGen - Secure Password Generator", "cyan", bold=True)
+        print_colored("PassenGen - Secure Password Generator", "cyan", bold=True)
         print_colored("=" * 40, "cyan")
         
         for i in range(args.count):
