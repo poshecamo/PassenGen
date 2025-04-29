@@ -14,6 +14,9 @@ import datetime
 
 from cryptography.fernet import Fernet
 
+import hashlib
+import requests
+
 try:
     from colorama import init, Fore, Style
     COLORAMA_AVAILABLE = True
@@ -128,6 +131,18 @@ def generate_password(length=DEFAULT_PASSWORD_LENGTH, use_specials=True,
     
     return password
 
+def is_password_pwned(password):
+    sha1pwd = hashlib.sha1(password.encode('utf-8')).hexdigest().upper()
+    prefix, suffix = sha1pwd[:5], sha1pwd[5:]
+    url = f"https://api.pwnedpasswords.com/range/{prefix}"
+    response = requests.get(url)
+    
+    if response.status_code != 200:
+        raise RuntimeError("Error fetching data from HIBP API.")
+    
+    hashes = (line.split(':') for line in response.text.splitlines())
+    return any(h == suffix for h, _ in hashes)
+
 def get_rotation_recommendation():
     created_at = datetime.datetime.now()
     rotate_after_days = 90
@@ -236,6 +251,14 @@ def main():
         print_colored(password, "green", bold=True)
         print_colored("\nPassword Strength: " + evaluate_password_strength(password), "magenta")
 
+        try:
+            if is_password_pwned(password):
+                print_colored("\n⚠️ Warning: This password has been found in known data breaches! Consider regenerating.", "red", bold=True)
+            else:
+                print_colored("\n✅ Password not found in known breaches.", "green")
+        except Exception as e:
+            print_colored(f"\n⚠️ Could not verify password breach status: {str(e)}", "yellow")
+
         created_at, next_rotation = get_rotation_recommendation()
         print_colored(f"\nPassword Created On: {created_at}", "blue")
         print_colored(f"Recommended Rotation By: {next_rotation}", "blue")
@@ -286,6 +309,14 @@ def main():
                 
             print_colored(password, "green", bold=True)
             print_colored("Password Strength: " + evaluate_password_strength(password), "magenta")
+
+            try:
+                if is_password_pwned(password):
+                    print_colored("\n⚠️ Warning: This password has been found in known data breaches! Consider regenerating.", "red", bold=True)
+                else:
+                    print_colored("\n✅ Password not found in known breaches.", "green")
+            except Exception as e:
+                print_colored(f"\n⚠️ Could not verify password breach status: {str(e)}", "yellow")
 
             created_at, next_rotation = get_rotation_recommendation()
             print_colored(f"\nPassword Created On: {created_at}", "blue")
