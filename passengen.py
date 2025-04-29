@@ -10,6 +10,7 @@ import secrets
 import string
 import argparse
 import sys
+import datetime
 
 from cryptography.fernet import Fernet
 
@@ -127,6 +128,11 @@ def generate_password(length=DEFAULT_PASSWORD_LENGTH, use_specials=True,
     
     return password
 
+def get_rotation_recommendation():
+    created_at = datetime.datetime.now()
+    rotate_after_days = 90
+    next_rotation = created_at + datetime.timedelta(days=rotate_after_days)
+    return created_at.strftime("%Y-%m-%d"), next_rotation.strftime("%Y-%m-%d")
 
 def print_colored(text, color=None, bold=False):
     """Print colored text if colorama is available."""
@@ -230,6 +236,10 @@ def main():
         print_colored(password, "green", bold=True)
         print_colored("\nPassword Strength: " + evaluate_password_strength(password), "magenta")
 
+        created_at, next_rotation = get_rotation_recommendation()
+        print_colored(f"\nPassword Created On: {created_at}", "blue")
+        print_colored(f"Recommended Rotation By: {next_rotation}", "blue")
+
         save_choice = input("\nDo you want to save this password encrypted locally? (y/n): ").lower()
         if save_choice == 'y':
             save_password_encrypted(password)
@@ -276,6 +286,10 @@ def main():
                 
             print_colored(password, "green", bold=True)
             print_colored("Password Strength: " + evaluate_password_strength(password), "magenta")
+
+            created_at, next_rotation = get_rotation_recommendation()
+            print_colored(f"\nPassword Created On: {created_at}", "blue")
+            print_colored(f"Recommended Rotation By: {next_rotation}", "blue")
 
             save_choice = input("\nDo you want to save this password encrypted locally? (y/n): ").lower()
             if save_choice == 'y':

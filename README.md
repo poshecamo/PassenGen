@@ -14,6 +14,7 @@ PassenGen is a command-line based tool written in Python designed to generate cr
 - **Zero network connections**: fully offline and local operation
 - **Colorful output** (optional, requires colorama)
 - **Docker support** for easy cross-platform execution
+- **Auto Password Expiration/Rotation Reminder**: After generating a password, the tool displays the creation date and a recommended date for password rotation (default 90 days), promoting good cybersecurity hygiene.
 
 ## Security Precautions
 
@@ -87,6 +88,7 @@ You will be prompted interactively for:
 - Option to copy the password to clipboard
 - Option to save the password encrypted locally
 - See password strength score
+- View password creation date and recommended rotation date
 
 ### CLI Mode with Arguments
 
