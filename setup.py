@@ -6,8 +6,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setup(
     name="passengen",
     version="0.1.0",
-    author="PassenGen Contributors",
-    author_email="your.email@example.com",
+    author="Polina Moshenets",
+    author_email="",
     description="A secure, offline password generator CLI tool",
     long_description=long_description,
     long_description_content_type="text/markdown",

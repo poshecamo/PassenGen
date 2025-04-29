@@ -21,9 +21,9 @@ except ImportError:
 
 
 def get_logo():
-    return """
+    return r"""
   _____                           _____            
- |  __ \                         / ____|           
+ |  __ \                        / ____|           
  | |__) |_ _ ___ ___  ___ _ __ | |  __  ___ _ __  
  |  ___/ _` / __/ __|/ _ \ '_ \| | |_ |/ _ \ '_ \ 
  | |  | (_| \__ \__ \  __/ | | | |__| |  __/ | | |
@@ -35,11 +35,11 @@ def get_logo():
      //   \ \   
     (|     | )  
    /'\_   _/`\  
-   \___)=(___/  
+   \___) (___/  
        """
 
 def get_small_logo():
-    return "PassenGen - Secure Passwords 🐼"
+    return "PassenGen - Secure Passwords"
 
 def print_logo(small=False):
     logo = get_small_logo() if small else get_logo()
@@ -136,6 +136,23 @@ def print_colored(text, color=None, bold=False):
     else:
         print(text)
 
+def evaluate_password_strength(password):
+    length = len(password)
+    categories = sum([
+        any(c.islower() for c in password),
+        any(c.isupper() for c in password),
+        any(c.isdigit() for c in password),
+        any(c in string.punctuation for c in password)
+    ])
+    if length >= 16 and categories == 4:
+        return "Very Strong 💪"
+    elif length >= 12 and categories >= 3:
+        return "Strong 🔥"
+    elif length >= 8 and categories >= 2:
+        return "Moderate ⚡"
+    else:
+        return "Weak ⚠️"
+
 
 def main():
     """Main function to handle CLI arguments and generate passwords."""
@@ -199,6 +216,7 @@ def main():
 
         print_colored("\nGenerated Password:", "yellow")
         print_colored(password, "green", bold=True)
+        print_colored("\nPassword Strength: " + evaluate_password_strength(password), "magenta")
         print("\nPassword generated using cryptographically secure methods.")
         print("This tool operates completely offline for your security.")
         sys.exit(0)
@@ -240,6 +258,7 @@ def main():
                 print_colored("\nGenerated Password:", "yellow")
                 
             print_colored(password, "green", bold=True)
+            print_colored("Password Strength: " + evaluate_password_strength(password), "magenta")
         
         print("\nPassword generated using cryptographically secure methods.")
         print("This tool operates completely offline for your security.")
