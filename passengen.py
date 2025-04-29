@@ -158,23 +158,6 @@ def print_colored(text, color=None, bold=False):
     else:
         print(text)
 
-def evaluate_password_strength(password):
-    length = len(password)
-    categories = sum([
-        any(c.islower() for c in password),
-        any(c.isupper() for c in password),
-        any(c.isdigit() for c in password),
-        any(c in string.punctuation for c in password)
-    ])
-    if length >= 16 and categories == 4:
-        return "Very Strong 💪"
-    elif length >= 12 and categories >= 3:
-        return "Strong 🔥"
-    elif length >= 8 and categories >= 2:
-        return "Moderate ⚡"
-    else:
-        return "Weak ⚠️"
-
 def save_password_encrypted(password, filepath="saved_passwords.enc"):
     key = Fernet.generate_key()
     cipher = Fernet(key)
@@ -196,142 +179,60 @@ def main():
     )
     
     parser.add_argument(
-        '-l', '--length', 
-        type=int, 
-        default=DEFAULT_PASSWORD_LENGTH,
-        help=f'Length of the password (minimum {MIN_PASSWORD_LENGTH}, default {DEFAULT_PASSWORD_LENGTH})'
-    )
-    
-    parser.add_argument(
-        '-ns', '--no-specials', 
-        action='store_true', 
-        help='Exclude special characters'
-    )
-    
-    parser.add_argument(
-        '-nd', '--no-digits', 
-        action='store_true', 
-        help='Exclude digits'
-    )
-    
-    parser.add_argument(
-        '-nl', '--no-lowercase', 
-        action='store_true', 
-        help='Exclude lowercase letters'
-    )
-    
-    parser.add_argument(
-        '-nu', '--no-uppercase', 
-        action='store_true', 
-        help='Exclude uppercase letters'
-    )
-    
-    parser.add_argument(
-        '-c', '--count', 
-        type=int, 
-        default=1,
-        help='Number of passwords to generate (default: 1)'
+        '--analyze',
+        action='store_true',
+        help='Analyze the strength of an existing password'
     )
     
     args = parser.parse_args()
     
-    if len(sys.argv) == 1:
-        options = interactive_options()
-
-        password = generate_password(
-            length=options['length'],
-            use_specials=options['use_specials'],
-            use_digits=options['use_digits'],
-            use_uppercase=options['use_uppercase'],
-            use_lowercase=options['use_lowercase'],
-            force_word=options['force_word']
-        )
-
-        print_colored("\nGenerated Password:", "yellow")
-        print_colored(password, "green", bold=True)
-        print_colored("\nPassword Strength: " + evaluate_password_strength(password), "magenta")
+    if args.analyze:
+        password_to_analyze = input("Enter the password you want to analyze: ")
 
         try:
-            if is_password_pwned(password):
-                print_colored("\n⚠️ Warning: This password has been found in known data breaches! Consider regenerating.", "red", bold=True)
+            if is_password_pwned(password_to_analyze):
+                print_colored("\n⚠️ Warning: This password has been found in known data breaches!", "red", bold=True)
             else:
                 print_colored("\n✅ Password not found in known breaches.", "green")
         except Exception as e:
             print_colored(f"\n⚠️ Could not verify password breach status: {str(e)}", "yellow")
 
-        created_at, next_rotation = get_rotation_recommendation()
-        print_colored(f"\nPassword Created On: {created_at}", "blue")
-        print_colored(f"Recommended Rotation By: {next_rotation}", "blue")
-
-        save_choice = input("\nDo you want to save this password encrypted locally? (y/n): ").lower()
-        if save_choice == 'y':
-            save_password_encrypted(password)
-
-        print("\nPassword generated using cryptographically secure methods.")
-        print("This tool operates completely offline for your security.")
         sys.exit(0)
     
-    # Validate password length
-    if args.length < MIN_PASSWORD_LENGTH:
-        print_colored(
-            f"Error: Password length must be at least {MIN_PASSWORD_LENGTH} characters.", 
-            "red", 
-            bold=True
-        )
-        sys.exit(1)
-    
-    # Validate that at least one character set is enabled
-    if args.no_specials and args.no_digits and args.no_lowercase and args.no_uppercase:
-        print_colored(
-            "Error: At least one character set must be enabled.", 
-            "red", 
-            bold=True
-        )
-        sys.exit(1)
-    
+    # Interactive password generation mode (default)
+    options = interactive_options()
+
+    password = generate_password(
+        length=options['length'],
+        use_specials=options['use_specials'],
+        use_digits=options['use_digits'],
+        use_uppercase=options['use_uppercase'],
+        use_lowercase=options['use_lowercase'],
+        force_word=options['force_word']
+    )
+
+    print_colored("\nGenerated Password:", "yellow")
+    print_colored(password, "green", bold=True)
+
     try:
-        print_colored("PassenGen - Secure Password Generator", "cyan", bold=True)
-        print_colored("=" * 40, "cyan")
-        
-        for i in range(args.count):
-            password = generate_password(
-                length=args.length,
-                use_specials=not args.no_specials,
-                use_digits=not args.no_digits,
-                use_uppercase=not args.no_uppercase,
-                use_lowercase=not args.no_lowercase
-            )
-            
-            if args.count > 1:
-                print_colored(f"\nPassword #{i+1}:", "yellow")
-            else:
-                print_colored("\nGenerated Password:", "yellow")
-                
-            print_colored(password, "green", bold=True)
-            print_colored("Password Strength: " + evaluate_password_strength(password), "magenta")
-
-            try:
-                if is_password_pwned(password):
-                    print_colored("\n⚠️ Warning: This password has been found in known data breaches! Consider regenerating.", "red", bold=True)
-                else:
-                    print_colored("\n✅ Password not found in known breaches.", "green")
-            except Exception as e:
-                print_colored(f"\n⚠️ Could not verify password breach status: {str(e)}", "yellow")
-
-            created_at, next_rotation = get_rotation_recommendation()
-            print_colored(f"\nPassword Created On: {created_at}", "blue")
-            print_colored(f"Recommended Rotation By: {next_rotation}", "blue")
-
-            save_choice = input("\nDo you want to save this password encrypted locally? (y/n): ").lower()
-            if save_choice == 'y':
-                save_password_encrypted(password)
-        
-        print("\nPassword generated using cryptographically secure methods.")
-        print("This tool operates completely offline for your security.")
-        
+        if is_password_pwned(password):
+            print_colored("\n⚠️ Warning: This password has been found in known data breaches! Consider regenerating.", "red", bold=True)
+        else:
+            print_colored("\n✅ Password not found in known breaches.", "green")
     except Exception as e:
-        print_colored(f"\nError: {str(e)}", "red", bold=True)
-        sys.exit(1)
+        print_colored(f"\n⚠️ Could not verify password breach status: {str(e)}", "yellow")
+
+    created_at, next_rotation = get_rotation_recommendation()
+    print_colored(f"\nPassword Created On: {created_at}", "blue")
+    print_colored(f"Recommended Rotation By: {next_rotation}", "blue")
+
+    save_choice = input("\nDo you want to save this password encrypted locally? (y/n): ").lower()
+    if save_choice == 'y':
+        save_password_encrypted(password)
+
+    print("\nPassword generated using cryptographically secure methods.")
+    print("This tool operates completely offline for your security.")
+    sys.exit(0)
 
 
 if __name__ == "__main__":

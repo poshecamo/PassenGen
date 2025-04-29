@@ -10,7 +10,6 @@ PassenGen is a command-line based tool written in Python designed to generate cr
 - **Minimum enforced password length** of 12 characters
 - **Passphrase generation** mode (random words)
 - **Encrypted password saving** locally using symmetric encryption
-- **Password strength scoring** after generation
 - **Zero network connections**: fully offline and local operation
 - **Colorful output** (optional, requires colorama)
 - **Docker support** for easy cross-platform execution
@@ -83,59 +82,29 @@ python passengen.py
 
 You will be prompted interactively for:
 - Password length
-- Whether to include special characters, digits, uppercase, lowercase
-- Optional: Force a specific word to be inserted into the password
+- Option to include or exclude special characters
 - Option to generate a passphrase instead of a random password
 - Option to copy the password to clipboard
 - Option to save the password encrypted locally
-- See password strength score
 - View password creation date and recommended rotation date
 - Automatic check if the generated password is found in known data breaches (powered by Have I Been Pwned).
 
 ### CLI Mode with Arguments
 
-#### Basic Command
+#### Analyze Existing Password in the breach database
 
 ```bash
-python passengen.py --length 16
+python passengen.py --analyze
 ```
 
-Generates a secure password with specific settings.
-
-#### Exclude Special Characters
-
-```bash
-python passengen.py --no-specials
-```
-
-Generates a password without special characters.
-
-#### Generate Multiple Passwords
-
-```bash
-python passengen.py --count 5
-```
-
-Generates 5 different passwords.
-
-#### Full Example with Multiple Options
-
-```bash
-python passengen.py --length 20 --no-specials --no-digits
-```
+This mode allows you to input any existing password and checks if it has been found in known data breaches (powered by Have I Been Pwned).
 
 ## CLI Options
 
-| Option | Short | Description |
-|--------|-------|-------------|
-| `--length` | `-l` | Specify password length (minimum enforced to 12) |
-| `--no-specials` | `-ns` | Exclude special characters |
-| `--no-digits` | `-nd` | Exclude digits |
-| `--no-lowercase` | `-nl` | Exclude lowercase letters |
-| `--no-uppercase` | `-nu` | Exclude uppercase letters |
-| `--count` | `-c` | Number of passwords to generate (default: 1) |
-| `--force-word` | (N/A) | Force a specific word to be included in the password |
-| `--help` | `-h` | Show help message and exit |
+| Option | Description |
+|--------|-------------|
+| `--analyze` | Analyze an existing password for breach status |
+| `--help` | Show help message and exit |
 
 ## License
 
